@@ -16,3 +16,5 @@ notebook: Java
 `Integer integer = 10;`
 
 事实上编译器在背后自动根据您写下的陈述，为您进行自动装箱（Autoboxing）动 作，同样的动作可以适用于 boolean、byte、short、char、long、float、double等基本类型，分别会使用对应的包裹类型（Wrapper Types）Boolean、Byte、Short、Character、Integer、Long、Float或Double。
+
+**所以对于值从-128到127之间的值，它们被装箱为Integer对象后，会存在内存之中被重用，所以当值在100，使用'=='进行比较时，i1 与 i2实际上指向同一个对象。**
