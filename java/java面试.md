@@ -102,7 +102,7 @@ notebook: Java
             }
         }
         ```
-        ```java       
+        ```java
         class PokerTest {
 
             public static void main(String[] args) {
@@ -133,4 +133,4 @@ notebook: Java
             }
         }
         ```
-    注意：Java中非静态内部类对象的创建要依赖其外部类对象，上面的面试题中foo和main方法都是静态方法，静态方法中没有this，也就是说没有所谓的外部类对象，因此无法创建内部类对象，如果要在静态方法中创建内部类对象，可以这样做：`new Outer().new Inner();`(想想java执行顺序)
+    注意：Java中非静态内部类对象的创建要依赖其外部类对象，上面的面试题中foo和main方法都是静态方法，静态方法中没有this，也就是说没有所谓的外部类对象，因此无法创建内部类对象，如果要在静态方法中创建内部类对象，可以这样做：`new Outer().new Inner();`[想想java执行顺序](https://github.com/JWWplus/study_notes/blob/master/java/java%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.md)
