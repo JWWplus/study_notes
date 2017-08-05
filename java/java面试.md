@@ -14,7 +14,9 @@ notebook: Java
 
 - 16. (1)如果两个对象相同（equals方法返回true），那么它们的hashCode值一定要相同；(2)如果两个对象的hashCode相同，它们并不一定相同。想想hashmap(数组+链表实现，对于相同的hashcode，存储在同一个位置的链表上，新入的值永远在第一个)
 
-- 18. java中都是值传递
+- 18. java中都是值传递。
+如果参数是基本类型，传递的是基本类型的字面量值的拷贝。
+如果参数是引用类型，传递的是该参量所引用的对象在堆中地址值的拷贝。
 
 - 19. stringbuffer: 线程安全，效率不及stringbuilder
       stringbuilder: 线程不安全
