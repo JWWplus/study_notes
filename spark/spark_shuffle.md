@@ -26,7 +26,7 @@ Job是由一组RDD上转换和动作组成，这组RDD之间的转换关系表�
 在Spark中，两个RDD之间的依赖关系是Spark的核心。站在RDD的角度，两者依赖表现为点对点依赖， 但是在Spark中，RDD存在分区（partition）的概念，两个RDD之间的转换会被细化为两个RDD分区之间的转换。
 ![pic](https://github.com/ColZer/DigAndBuried/blob/master/image/job.jpg?raw=true)
 
-## soark 中的shuffle
+## spark 中的shuffle
 
 ### HashShuffleManger
 
