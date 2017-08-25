@@ -30,7 +30,25 @@ TCP（Transmission Control Protocol，传输控制协议）是基于连接的协
 
 - 第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack=k+1），此包发送完毕，客户端和服务器进入ESTABLISHED（TCP连接成功）状态，完成三次握手。
 
-![pic](http://www.vuln.cn/wp-content/uploads/2015/09/3.png)
+![pic](http://blog.chinaunix.net/attachment/201304/8/22312037_1365405910EROI.png)
+
+上图中有几个字段需要重点介绍下：
+（1）序号：Seq序号，占32位，用来标识从TCP源端向目的端发送的字节流，发起方发送数据时对此进行标记。
+（2）确认序号：Ack序号，占32位，只有ACK标志位为1时，确认序号字段才有效，Ack=Seq+1。
+（3）标志位：共6个，即URG、ACK、PSH、RST、SYN、FIN等，具体含义如下：
+        （A）URG：紧急指针（urgent pointer）有效。
+        （B）ACK：确认序号有效。
+        （C）PSH：接收方应该尽快将这个报文交给应用层。
+        （D）RST：重置连接。
+        （E）SYN：发起一个新连接。
+        （F）FIN：释放一个连接。
+
+需要注意的是：
+        （A）不要将确认序号Ack与标志位中的ACK搞混了。
+        （B）确认方Ack=发起方Req+1，两端配对。 
+
+### 四次挥手
+
 
 ## UDP协议
 
