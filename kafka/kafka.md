@@ -28,6 +28,7 @@ Partition中的每条Message由offset来表示它在这个partition中的偏移�
 1. 查找某个offset的Message（调用FileMessageSet的searchFor方法）是顺序查找的。因此，如果数据文件很大的话，查找的效率就低。
 
 那Kafka是如何解决查找效率的的问题呢？有两大法宝：1) 分段 2) 索引。如下图：
+
 ![pic2](http://img.blog.csdn.net/20150121163718558)
 
 **如何查找index文件？**
@@ -78,7 +79,34 @@ kafka的数据是变长的，事前并不知道会有多少字节，因此在每
 
 ## Replication & Leader election(副本以及leader选举)
 
+Kafka从0.8开始提供partition级别的replication，replication的数量可在`$KAFKA_HOME/config/server.properties`中配置。
+
+`default.replication.factor = 1`
+
+该 Replication与leader election配合提供了自动的failover机制。replication对Kafka的吞吐率是有一定影响的，但极大的增强了可用性。默认情况下，Kafka的replication数量为1。　　每个partition都有一个唯一的leader，所有的读写操作都在leader上完成，leader批量从leader上pull数据。一般情况下partition的数量大于等于broker的数量，并且所有partition的leader均匀分布在broker上。follower上的日志和其leader上的完全一样。
+　　和大部分分布式系统一样，Kakfa处理失败需要明确定义一个broker是否alive。对于Kafka而言，Kafka存活包含两个条件，一是它必须维护与Zookeeper的session(这个通过Zookeeper的heartbeat机制来实现)。二是follower必须能够及时将leader的writing复制过来，不能“落后太多”。
+　　leader会track“in sync”的node list。如果一个follower宕机，或者落后太多，leader将把它从”in sync” list中移除。这里所描述的“落后太多”指follower复制的消息落后于leader后的条数超过预定值，该值可在`$KAFKA_HOME/config/server.properties`中配置。
+
+```text
+#If a replica falls more than this many messages behind the leader, the leader will remove the follower from ISR and treat it as dead
+replica.lag.max.messages=4000
+#If a follower hasn't sent any fetch requests for this window of time, the leader will remove the follower from ISR (in-sync replicas) and treat it as dead
+replica.lag.time.max.ms=10000
+```
+
+### 怎样判断成功提交
+
+Producer在发布消息到某个Partition时，先通过ZooKeeper找到该Partition的Leader，然后无论该Topic的Replication Factor为多少（也即该Partition有多少个Replica），Producer只将该消息发送到该Partition的Leader。Leader会将该消息写入其本地Log。每个Follower都从Leader pull数据。这种方式上，Follower存储的数据顺序与Leader保持一致。Follower在收到该消息并写入其Log后，向Leader发送ACK。一旦Leader收到了ISR中的所有Replica的ACK，该消息就被认为已经commit了，Leader将增加HW并且向Producer发送ACK。
+
+为了提高性能，每个Follower在接收到数据后就立马向Leader发送ACK，而非等到数据写入Log中。因此，对于已经commit的消息，Kafka只能保证它被存于多个Replica的内存中，而不能保证它们被持久化到磁盘中，也就不能完全保证异常发生后该条消息一定能被Consumer消费。但考虑到这种场景非常少见，可以认为这种方式在性能和数据持久化上做了一个比较好的平衡。在将来的版本中，Kafka会考虑提供更高的持久性。
+
+Consumer读消息也是从Leader读取，只有被commit过的消息（offset低于HW的消息）才会暴露给Consumer。
+
+![pic4](http://cdn3.infoqstatic.com/statics_s1_20170829-0315/resource/articles/kafka-analysis-part-2/zh/resources/0416000.png)
+
 ## Consumer Group & Rebalance
+
+### 
 
 ## 几个面试问到的问题
 
