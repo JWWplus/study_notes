@@ -64,6 +64,8 @@ InputFormat有如下几种:
 - **TextInputFormat**:
 TextInputFormat是默认的INputFormat，输入文件中的每一行就是一个记录，Key是这一行的byte offset，而value是这一行的内容。如果一个作业的Inputformat是TextInputFormat，并且框架检测到输入文件的后缀是 .gz 和 .lzo，就会使用对应的CompressionCodec自动解压缩这些文件。但是需要注意，**上述带后缀的压缩文件不会被切分，并且整个压缩文件会分给一个mapper来处理。** （可以写mr作业来并行传送的理由）
 
+举个例子：一个未被压缩的文件有1GB大小，HDFS默认的block大小是64MB，那么这个文件就会被分为16个block作为MapReduce的输入，每一个单独使用一个map任务。如果这个文件是已经使用gzip压缩的呢？如果分成16个块，每一个块做成一个输入，显然是不适合的，因为gzip压缩流的随即读是不可能的。实际上，当MapReduce处理压缩格式的文件的时候它会认识到这是一个gzip的压缩文件，而gzip又不支持随即读，它就会把16块分给一个map去处理，这里就会有很多非本地处理的map任务，整个过程耗费的时间就会相当长。
+
 - **KeyValueTextInputFormat**
 输入文件中每一行就是一个记录，第一个分隔符字符切分每行。在分隔符字符之前的内容为Key，在之后的为Value。分隔符变量通过key.value.separator.in.input.line变量设置，默认为(\t)字符。
 
