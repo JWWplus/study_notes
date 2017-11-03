@@ -11,6 +11,10 @@ notebook: spark
 ## 官方文档
 
 [link](https://spark.apache.org/docs/1.6.3/streaming-flume-integration.html)
+官方提供了两种消费模式:
+
+1. post模式:flume将event直接推送过去,需要sparkstrraming端口事先存在,否则丢数据
+1. pull模式:flume将数据存储在sink中,spark会有一个可靠的recevier来自动拉数据.这个配置比较麻烦,同时flume的sink缓存不能设置的过小.
 
 ## flume 配置文件
 
